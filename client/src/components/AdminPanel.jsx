@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 const AdminPanel = ({ trains, isDosActive, onInject }) => {
     const [selectedTrain, setSelectedTrain] = useState('');
     const [delayValue, setDelayValue] = useState(10);
+    const [delayMessage, setDelayMessage] = useState('');
 
     const handleDelayInject = () => {
         if (!selectedTrain) return;
-        onInject('DELAY', selectedTrain, parseInt(delayValue));
+        onInject('DELAY', selectedTrain, parseInt(delayValue), delayMessage);
+        setDelayMessage(''); // Clear message after inject
     };
 
     const handleDosToggle = () => {
@@ -50,6 +52,13 @@ const AdminPanel = ({ trains, isDosActive, onInject }) => {
                             value={delayValue}
                             onChange={(e) => setDelayValue(e.target.value)}
                             placeholder="Minutes"
+                        />
+                        <input
+                            type="text"
+                            className="w-full p-2 border rounded"
+                            value={delayMessage}
+                            onChange={(e) => setDelayMessage(e.target.value)}
+                            placeholder="Reason (optional)"
                         />
                         <button
                             onClick={handleDelayInject}

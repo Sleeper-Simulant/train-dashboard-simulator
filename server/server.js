@@ -116,7 +116,7 @@ app.get('/api/trains', (req, res) => {
 });
 
 app.post('/api/inject', (req, res) => {
-    const { type, targetId, value } = req.body;
+    const { type, targetId, value, message } = req.body;
 
     console.log(`Inject received: ${type} on ${targetId} with value ${value}`);
 
@@ -128,13 +128,19 @@ app.post('/api/inject', (req, res) => {
             train.delayMinutes += delayVal;
             // Total delay is now accumulated in the loop, not here.
 
+            // Build description with optional message
+            const baseDescription = `${train.id} (${train.route.start} → ${train.route.end}) has been delayed`;
+            const description = message && message.trim()
+                ? `${baseDescription} due to ${message}.`
+                : `${baseDescription}.`;
+
             // Add to incidents list if not already there
             if (!incidents.find(i => i.trainId === targetId)) {
                 incidents.push({
                     id: Date.now(),
                     type: 'Delay',
                     trainId: targetId,
-                    description: `${train.id} (${train.route.start} → ${train.route.end}) has been delayed.`
+                    description: description
                 });
             } else {
                 // Update existing incident description or add new one? 
@@ -143,7 +149,7 @@ app.post('/api/inject', (req, res) => {
                     id: Date.now(),
                     type: 'Delay Update',
                     trainId: targetId,
-                    description: `${train.id} (${train.route.start} → ${train.route.end}) has been delayed.`
+                    description: description
                 });
             }
         }

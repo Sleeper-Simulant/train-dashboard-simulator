@@ -35,11 +35,11 @@ function App() {
         };
     }, []);
 
-    const handleInject = (type, targetId, value) => {
+    const handleInject = (type, targetId, value, message) => {
         fetch('http://localhost:3001/api/inject', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, targetId, value })
+            body: JSON.stringify({ type, targetId, value, message })
         }).then(res => res.json())
             .then(data => console.log(data.message))
             .catch(err => console.error("Inject failed", err));
@@ -75,7 +75,7 @@ function App() {
                         ⚠️ CRITICAL SYSTEM ALERT: NETWORK INSTABILITY DETECTED ⚠️
                     </div>
                 )}
-                
+
                 {/* Admin Panel */}
                 {isAdmin && (
                     <AdminPanel
