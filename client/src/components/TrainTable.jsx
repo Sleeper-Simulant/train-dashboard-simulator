@@ -11,7 +11,8 @@ const TrainTable = ({ trains }) => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Route</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delay (min)</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Delay</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Delay</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -39,7 +40,10 @@ const TrainTable = ({ trains }) => {
                                 </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {train.delayMinutes > 0 ? `+${train.delayMinutes}` : '-'}
+                                {train.delayMinutes > 0 ? `+${Math.ceil(train.delayMinutes)} min` : '-'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-semibold">
+                                {train.totalDelayMinutes > 0 ? `+${train.totalDelayMinutes} min` : '-'}
                             </td>
                         </tr>
                     ))}

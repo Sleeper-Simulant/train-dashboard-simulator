@@ -34,7 +34,8 @@ function initTrains() {
         },
         progress: Math.random() * 100, // 0 to 100%
         status: 'On Time', // 'On Time', 'Delayed', 'Cancelled'
-        delayMinutes: 0
+        delayMinutes: 0,
+        totalDelayMinutes: 0 // Track accumulated delay
     })).filter(t => t.route.start !== t.route.end);
 }
 
@@ -46,9 +47,27 @@ setInterval(() => {
 
     trains.forEach(train => {
         if (train.status !== 'Cancelled') {
-            // Move train
             let speed = 0.5; // Base speed
-            if (train.status === 'Delayed') speed = 0.1;
+
+            // Handle Delay
+            if (train.delayMinutes > 0) {
+                speed = 0; // Stop the train
+                train.status = 'Delayed';
+
+                // Count down delay. 
+                // 1 minute delay = 60 real seconds
+                train.delayMinutes -= (1 / 60);
+
+                if (train.delayMinutes <= 0) {
+                    train.delayMinutes = 0;
+                    train.status = 'On Time'; // Resume normal status
+                }
+            } else {
+                // Ensure status is correct if not delayed
+                if (train.status === 'Delayed') {
+                    train.status = 'On Time';
+                }
+            }
 
             train.progress += speed;
 
@@ -64,6 +83,7 @@ setInterval(() => {
                 train.route = { start, end };
                 train.status = 'On Time';
                 train.delayMinutes = 0;
+                train.totalDelayMinutes = 0; // Reset total delay for new route
             }
         }
     });
@@ -87,14 +107,26 @@ app.post('/api/inject', (req, res) => {
         const train = trains.find(t => t.id === targetId);
         if (train) {
             train.status = 'Delayed';
-            train.delayMinutes += (value || 10);
+            const delayVal = value || 10;
+            train.delayMinutes += delayVal;
+            train.totalDelayMinutes += delayVal; // Accumulate total delay
+
             // Add to incidents list if not already there
             if (!incidents.find(i => i.trainId === targetId)) {
                 incidents.push({
                     id: Date.now(),
                     type: 'Delay',
                     trainId: targetId,
-                    description: `Delay of ${train.delayMinutes} min detected.`
+                    description: `Delay of ${delayVal} min detected.`
+                });
+            } else {
+                // Update existing incident description or add new one? 
+                // Let's add a new one for history tracking
+                incidents.push({
+                    id: Date.now(),
+                    type: 'Delay Update',
+                    trainId: targetId,
+                    description: `Additional delay of ${delayVal} min.`
                 });
             }
         }
