@@ -134,7 +134,7 @@ app.post('/api/inject', (req, res) => {
                     id: Date.now(),
                     type: 'Delay',
                     trainId: targetId,
-                    description: `Delay of ${delayVal} min detected.`
+                    description: `${train.id} (${train.route.start} → ${train.route.end}) has been delayed.`
                 });
             } else {
                 // Update existing incident description or add new one? 
@@ -143,7 +143,7 @@ app.post('/api/inject', (req, res) => {
                     id: Date.now(),
                     type: 'Delay Update',
                     trainId: targetId,
-                    description: `Additional delay of ${delayVal} min.`
+                    description: `${train.id} (${train.route.start} → ${train.route.end}) has been delayed.`
                 });
             }
         }
