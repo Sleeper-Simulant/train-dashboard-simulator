@@ -16,27 +16,48 @@ const io = new Server(server, {
 });
 
 // --- Simulation State ---
-const STATIONS = ['Wien Hbf', 'St. Pölten', 'Linz Hbf', 'Salzburg Hbf', 'Innsbruck Hbf'];
+const ROUTES = [
+    ['Wien Hbf', 'St. Pölten Hbf', 'Linz Hbf', 'Salzburg Hbf'],
+    ['Graz Hbf', 'Bruck an der Mur', 'Leoben Hbf', 'Kapfenberg'],
+    ['Innsbruck Hbf', 'Wörgl Hbf', 'Kufstein', 'Rosenheim'],
+    ['Wien Westbahnhof', 'Wien Meidling', 'Baden bei Wien', 'Wiener Neustadt'],
+    ['Salzburg Hbf', 'Bischofshofen', 'Zell am See', 'Saalfelden'],
+    ['Villach Hbf', 'Klagenfurt Hbf', 'Wolfsberg', 'Graz Hbf'],
+    ['Linz Hbf', 'Wels Hbf', 'Attnang-Puchheim', 'Salzburg Hbf'],
+    ['Wien Hbf', 'Wiener Neustadt', 'Mürzzuschlag', 'Bruck an der Mur', 'Graz Hbf'],
+    ['Innsbruck Hbf', 'Jenbach', 'Schwaz', 'Wörgl Hbf'],
+    ['St. Pölten Hbf', 'Amstetten', 'Steyr', 'Linz Hbf'],
+    ['Feldkirch', 'Bludenz', 'Landeck-Zams', 'Innsbruck Hbf'],
+    ['Wien Hbf', 'Hütteldorf', 'St. Pölten Hbf', 'Amstetten']
+];
+
 const TRAIN_TYPES = ['RJ', 'ICE', 'REX', 'S-Bahn'];
 
 let trains = [];
 let incidents = [];
 let isDosActive = false;
 
+// Helper to pick a random route from the predefined list
+function getRandomRoute() {
+    const routeStations = ROUTES[Math.floor(Math.random() * ROUTES.length)];
+    return {
+        start: routeStations[0],
+        end: routeStations[routeStations.length - 1],
+        stations: routeStations
+    };
+}
+
 // Initialize some trains
 function initTrains() {
     trains = Array.from({ length: 10 }, (_, i) => ({
         id: `TR-${100 + i}`,
         type: TRAIN_TYPES[Math.floor(Math.random() * TRAIN_TYPES.length)],
-        route: {
-            start: STATIONS[Math.floor(Math.random() * STATIONS.length)],
-            end: STATIONS[Math.floor(Math.random() * STATIONS.length)]
-        },
+        route: getRandomRoute(),
         progress: Math.random() * 100, // 0 to 100%
         status: 'On Time', // 'On Time', 'Delayed', 'Cancelled'
         delayMinutes: 0,
         totalDelayMinutes: 0 // Track accumulated delay
-    })).filter(t => t.route.start !== t.route.end);
+    }));
 }
 
 initTrains();
@@ -76,13 +97,7 @@ setInterval(() => {
             // Reset if reached destination
             if (train.progress >= 100) {
                 train.progress = 0;
-                // Pick new random route
-                const start = train.route.end;
-                let end = STATIONS[Math.floor(Math.random() * STATIONS.length)];
-                while (end === start) {
-                    end = STATIONS[Math.floor(Math.random() * STATIONS.length)];
-                }
-                train.route = { start, end };
+                train.route = getRandomRoute();
                 train.status = 'On Time';
                 train.delayMinutes = 0;
                 train.totalDelayMinutes = 0; // Reset total delay for new route

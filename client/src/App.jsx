@@ -75,12 +75,15 @@ function App() {
                         ⚠️ CRITICAL SYSTEM ALERT: NETWORK INSTABILITY DETECTED ⚠️
                     </div>
                 )}
-
-                {/* Train Table */}
-                <section>
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Active Trains</h2>
-                    <TrainTable trains={trains} isAdmin={isAdmin} />
-                </section>
+                
+                {/* Admin Panel */}
+                {isAdmin && (
+                    <AdminPanel
+                        trains={trains}
+                        isDosActive={isDosActive}
+                        onInject={handleInject}
+                    />
+                )}
 
                 {/* Incidents Log (Visible to all for monitoring) */}
                 <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -97,14 +100,13 @@ function App() {
                     </div>
                 </section>
 
-                {/* Admin Panel */}
-                {isAdmin && (
-                    <AdminPanel
-                        trains={trains}
-                        isDosActive={isDosActive}
-                        onInject={handleInject}
-                    />
-                )}
+                {/* Train Table */}
+                <section>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Active Trains</h2>
+                    <TrainTable trains={trains} isAdmin={isAdmin} />
+                </section>
+
+
 
             </main>
         </div>
