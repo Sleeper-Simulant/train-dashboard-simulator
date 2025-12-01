@@ -56,7 +56,9 @@ setInterval(() => {
 
                 // Count down delay. 
                 // 1 minute delay = 60 real seconds
-                train.delayMinutes -= (1 / 60);
+                const delta = 1 / 60;
+                train.delayMinutes -= delta;
+                train.totalDelayMinutes += delta; // Increment total delay as it passes
 
                 if (train.delayMinutes <= 0) {
                     train.delayMinutes = 0;
@@ -109,7 +111,7 @@ app.post('/api/inject', (req, res) => {
             train.status = 'Delayed';
             const delayVal = value || 10;
             train.delayMinutes += delayVal;
-            train.totalDelayMinutes += delayVal; // Accumulate total delay
+            // Total delay is now accumulated in the loop, not here.
 
             // Add to incidents list if not already there
             if (!incidents.find(i => i.trainId === targetId)) {

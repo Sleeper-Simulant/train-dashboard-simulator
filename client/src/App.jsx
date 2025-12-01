@@ -79,7 +79,7 @@ function App() {
                 {/* Train Table */}
                 <section>
                     <h2 className="text-xl font-semibold mb-4 text-gray-800">Active Trains</h2>
-                    <TrainTable trains={trains} />
+                    <TrainTable trains={trains} isAdmin={isAdmin} />
                 </section>
 
                 {/* Incidents Log (Visible to all for monitoring) */}
