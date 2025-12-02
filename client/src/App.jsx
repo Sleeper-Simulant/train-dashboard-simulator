@@ -9,7 +9,7 @@ const socket = io('http://localhost:3001');
 function App() {
     const [trains, setTrains] = useState([]);
     const [incidents, setIncidents] = useState([]);
-    const [isDosActive, setIsDosActive] = useState(false);
+    const [isHackActive, setIsHackActive] = useState(false);
     const [connectionStatus, setConnectionStatus] = useState('Disconnected');
     const [isAdmin, setIsAdmin] = useState(false); // Simple toggle for view
 
@@ -25,7 +25,7 @@ function App() {
         socket.on('update', (data) => {
             setTrains(data.trains);
             setIncidents(data.incidents);
-            setIsDosActive(data.isDosActive);
+            setIsHackActive(data.isHackActive);
         });
 
         return () => {
@@ -79,43 +79,52 @@ function App() {
 
             <main className="max-w-7xl mx-auto space-y-8">
 
-                {/* Status Banner for DoS */}
-                {isDosActive && (
-                    <div className="bg-red-600 text-white p-4 rounded-lg shadow-lg animate-pulse text-center font-bold text-xl">
-                        ⚠️ KRITISCHER SYSTEMALARM: NETZWERKINSTABILITÄT ERKANNT ⚠️
+                {/* Hack State - Show only error message when active */}
+                {isHackActive && !isAdmin && (
+                    <div className="bg-red-600 text-white p-8 rounded-lg shadow-lg text-center">
+                        <p className="font-bold text-2xl mb-4">Oh nein... Da wurde wohl jemand gehacked! lol</p>
+                        <img
+                            src="/troll.jpg"
+                            alt="Hack Error"
+                            className="mx-auto max-w-2xl w-full rounded-lg shadow-xl"
+                        />
                     </div>
                 )}
+
                 {/* Admin Panel */}
                 {isAdmin && (
                     <AdminPanel
                         trains={trains}
-                        isDosActive={isDosActive}
+                        isHackActive={isHackActive}
                         onInject={handleInject}
                     />
                 )}
 
-                {/* Incidents Log (Visible to all for monitoring) */}
-                <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Vorfallprotokoll</h2>
-                    <div className="max-h-48 overflow-y-auto space-y-2">
-                        {incidents.length === 0 && <p className="text-gray-500 italic">Keine aktiven Vorfälle.</p>}
-                        {incidents.slice().reverse().map(inc => (
-                            <div key={inc.id} className="flex items-start gap-3 text-sm p-2 border-b last:border-0">
-                                <span className="font-mono text-gray-400">{new Date(inc.id).toLocaleTimeString()}</span>
-                                <span className={`font-bold ${inc.type === 'Security Alert' ? 'text-red-600' : 'text-yellow-600'}`}>{inc.type === 'Security Alert' ? 'Sicherheitswarnung' : inc.type === 'Delay' ? 'Verspätung' : 'Verspätungs-Update'}:</span>
-                                <span className="text-gray-700">{inc.description}</span>
+                {/* Only show these sections if hack is NOT active or if user is admin */}
+                {(!isHackActive || isAdmin) && (
+                    <>
+                        {/* Incidents Log (Visible to all for monitoring) */}
+                        <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Vorfallprotokoll</h2>
+                            <div className="max-h-48 overflow-y-auto space-y-2">
+                                {incidents.length === 0 && <p className="text-gray-500 italic">Keine aktiven Vorfälle.</p>}
+                                {incidents.slice().reverse().map(inc => (
+                                    <div key={inc.id} className="flex items-start gap-3 text-sm p-2 border-b last:border-0">
+                                        <span className="font-mono text-gray-400">{new Date(inc.id).toLocaleTimeString()}</span>
+                                        <span className={`font-bold ${inc.type === 'Security Alert' ? 'text-red-600' : 'text-yellow-600'}`}>{inc.type === 'Security Alert' ? 'Sicherheitswarnung' : inc.type === 'Delay' ? 'Verspätung' : 'Verspätungs-Update'}:</span>
+                                        <span className="text-gray-700">{inc.description}</span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                </section>
+                        </section>
 
-                {/* Train Table */}
-                <section>
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Aktive Züge</h2>
-                    <TrainTable trains={trains} isAdmin={isAdmin} onCancelDelay={handleCancelDelay} />
-                </section>
-
-
+                        {/* Train Table */}
+                        <section>
+                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Aktive Züge</h2>
+                            <TrainTable trains={trains} isAdmin={isAdmin} onCancelDelay={handleCancelDelay} />
+                        </section>
+                    </>
+                )}
 
             </main>
         </div>

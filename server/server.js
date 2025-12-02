@@ -35,7 +35,7 @@ const TRAIN_TYPES = ['RJ', 'ICE', 'REX', 'S-Bahn'];
 
 let trains = [];
 let incidents = [];
-let isDosActive = false;
+let isHackActive = false;
 
 // Helper to pick a random route from the predefined list
 function getRandomRoute() {
@@ -64,7 +64,7 @@ initTrains();
 
 // --- Simulation Loop ---
 setInterval(() => {
-    if (isDosActive) return; // Stop updates during DoS
+    if (isHackActive) return; // Stop updates during Hack
 
     trains.forEach(train => {
         if (train.status !== 'Cancelled') {
@@ -113,13 +113,13 @@ setInterval(() => {
         }
     });
 
-    io.emit('update', { trains, incidents, isDosActive });
+    io.emit('update', { trains, incidents, isHackActive });
 }, 1000);
 
 // --- API Endpoints ---
 
 app.get('/api/trains', (req, res) => {
-    if (isDosActive) return res.status(503).json({ error: 'Service Unavailable' });
+    if (isHackActive) return res.status(503).json({ error: 'Service Unavailable' });
     res.json(trains);
 });
 
@@ -161,19 +161,19 @@ app.post('/api/inject', (req, res) => {
                 });
             }
         }
-    } else if (type === 'DOS') {
-        isDosActive = !isDosActive; // Toggle DoS
-        if (isDosActive) {
+    } else if (type === 'HACK') {
+        isHackActive = !isHackActive; // Toggle Hack
+        if (isHackActive) {
             incidents.push({
                 id: Date.now(),
                 type: 'Security Alert',
                 trainId: 'SYSTEM',
-                description: 'Hohe Anfragemenge erkannt. Möglicher Denial of Service.'
+                description: 'Oh nein... Da wurde wohl jemand gehacked! lol'
             });
         }
     }
 
-    io.emit('update', { trains, incidents, isDosActive });
+    io.emit('update', { trains, incidents, isHackActive });
     res.json({ success: true, message: `Injected ${type}` });
 });
 
@@ -195,7 +195,7 @@ app.post('/api/cancel-delay', (req, res) => {
                 description: `${train.id} (${train.route.start} → ${train.route.end}) fährt wieder.`
             });
 
-            io.emit('update', { trains, incidents, isDosActive });
+            io.emit('update', { trains, incidents, isHackActive });
             res.json({ success: true, message: `Delay cancelled for ${trainId}` });
         } else {
             res.json({ success: false, message: `Train ${trainId} is not delayed` });
@@ -208,8 +208,8 @@ app.post('/api/cancel-delay', (req, res) => {
 app.post('/api/reset', (req, res) => {
     initTrains();
     incidents = [];
-    isDosActive = false;
-    io.emit('update', { trains, incidents, isDosActive });
+    isHackActive = false;
+    io.emit('update', { trains, incidents, isHackActive });
     res.json({ success: true, message: 'System Reset' });
 });
 

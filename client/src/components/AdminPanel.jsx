@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AdminPanel = ({ trains, isDosActive, onInject }) => {
+const AdminPanel = ({ trains, isHackActive, onInject }) => {
     const [selectedTrain, setSelectedTrain] = useState('');
     const [delayValue, setDelayValue] = useState(10);
     const [delayMessage, setDelayMessage] = useState('');
@@ -11,8 +11,8 @@ const AdminPanel = ({ trains, isDosActive, onInject }) => {
         setDelayMessage(''); // Clear message after inject
     };
 
-    const handleDosToggle = () => {
-        onInject('DOS', 'SYSTEM', 0);
+    const handleHackToggle = () => {
+        onInject('HACK', 'SYSTEM', 0);
     };
 
     const handleReset = () => {
@@ -64,15 +64,15 @@ const AdminPanel = ({ trains, isDosActive, onInject }) => {
                     </div>
                 </div>
 
-                {/* DoS Attack */}
+                {/* Hack Attack */}
                 <div className="p-4 border rounded bg-gray-50">
-                    <h3 className="font-semibold mb-2">Netzwerkangriff</h3>
-                    <p className="text-sm text-gray-600 mb-4">Simuliere einen Denial-of-Service-Angriff auf das Tracking-System.</p>
+                    <h3 className="font-semibold mb-2">Hackerangriff</h3>
+                    <p className="text-sm text-gray-600 mb-4">Simuliere einen gelungenen Hackerangriff.</p>
                     <button
-                        onClick={handleDosToggle}
-                        className={`w-full font-bold py-2 px-4 rounded ${isDosActive ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-gray-800 hover:bg-gray-900 text-white'}`}
+                        onClick={handleHackToggle}
+                        className={`w-full font-bold py-2 px-4 rounded ${isHackActive ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-gray-800 hover:bg-gray-900 text-white'}`}
                     >
-                        {isDosActive ? 'DoS-Angriff STOPPEN' : 'DoS-Simulation STARTEN'}
+                        {isHackActive ? 'Hackerangriff beenden' : 'Hacken'}
                     </button>
                 </div>
 
