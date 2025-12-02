@@ -129,10 +129,10 @@ app.post('/api/inject', (req, res) => {
             // Total delay is now accumulated in the loop, not here.
 
             // Build description with optional message
-            const baseDescription = `${train.id} (${train.route.start} → ${train.route.end}) has been delayed`;
+            const baseDescription = `${train.id} (${train.route.start} → ${train.route.end}) verspätet sich`;
             const description = message && message.trim()
-                ? `${baseDescription} due to ${message}.`
-                : `${baseDescription}.`;
+                ? `${baseDescription} aufgrund ${message}!`
+                : `${baseDescription}!`;
 
             // Add to incidents list if not already there
             if (!incidents.find(i => i.trainId === targetId)) {

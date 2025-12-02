@@ -16,7 +16,7 @@ const TrainTable = ({ trains, isAdmin }) => {
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${train.status === 'On Time' ? 'bg-green-100 text-green-800' :
                                     train.status === 'Delayed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                                 }`}>
-                                {train.status}
+                                {train.status === 'On Time' ? 'Pünktlich' : train.status === 'Delayed' ? 'Verspätet' : train.status}
                             </span>
                         </div>
                     </div>
@@ -41,7 +41,7 @@ const TrainTable = ({ trains, isAdmin }) => {
                                     className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 transition-all duration-1000 ease-linear"
                                     style={{ left: `${train.progress}%` }}
                                 >
-                                    <span className="text-lg" role="img" aria-label="train">🚃</span>
+                                    <span className="text-lg" role="img" aria-label="train">🚆</span>
                                 </div>
                             </div>
 
@@ -83,14 +83,14 @@ const TrainTable = ({ trains, isAdmin }) => {
                         <div className="flex gap-6 pb-1">
                             {isAdmin && (
                                 <div className="flex flex-col items-end min-w-[100px]">
-                                    <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Injected Delay</span>
+                                    <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Injected Verspätung</span>
                                     <span className={`text-lg font-bold ${train.delayMinutes > 0 ? 'text-red-600' : 'text-gray-400'}`}>
                                         {train.delayMinutes > 0 ? `+${Math.ceil(train.delayMinutes)} min` : '-'}
                                     </span>
                                 </div>
                             )}
                             <div className="flex flex-col items-end min-w-[100px]">
-                                <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Delay</span>
+                                <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Gesamtverspätung</span>
                                 <span className={`text-lg font-bold ${train.totalDelayMinutes > 0 ? 'text-orange-600' : 'text-gray-400'}`}>
                                     {train.totalDelayMinutes > 0 ? `+${Math.floor(train.totalDelayMinutes)} min` : '-'}
                                 </span>

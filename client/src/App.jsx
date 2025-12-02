@@ -49,20 +49,20 @@ function App() {
         <div className="min-h-screen bg-gray-100 p-8 font-sans">
             <header className="mb-8 flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">ARAMIS <span className="text-blue-600">Live</span></h1>
-                    <p className="text-gray-600">Real-time Train Tracking System</p>
+                    <h1 className="text-3xl font-bold text-gray-900">ARS <span className="text-blue-600">Live</span></h1>
+                    <p className="text-gray-600">Echtzeit-Zugverfolgungssystem</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${connectionStatus === 'Connected' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                         <span className={`w-2 h-2 rounded-full ${connectionStatus === 'Connected' ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                        {connectionStatus}
+                        {connectionStatus === 'Connected' ? 'Verbunden' : 'Getrennt'}
                     </div>
                     <button
                         onClick={() => setIsAdmin(!isAdmin)}
                         className="text-sm text-blue-600 hover:underline"
                     >
-                        {isAdmin ? 'Switch to User View' : 'Switch to Admin View'}
+                        {isAdmin ? 'Zur Benutzeransicht' : 'Zur Admin-Ansicht'}
                     </button>
                 </div>
             </header>
@@ -72,10 +72,9 @@ function App() {
                 {/* Status Banner for DoS */}
                 {isDosActive && (
                     <div className="bg-red-600 text-white p-4 rounded-lg shadow-lg animate-pulse text-center font-bold text-xl">
-                        ⚠️ CRITICAL SYSTEM ALERT: NETWORK INSTABILITY DETECTED ⚠️
+                        ⚠️ KRITISCHER SYSTEMALARM: NETZWERKINSTABILITÄT ERKANNT ⚠️
                     </div>
                 )}
-
                 {/* Admin Panel */}
                 {isAdmin && (
                     <AdminPanel
@@ -84,16 +83,16 @@ function App() {
                         onInject={handleInject}
                     />
                 )}
-
+                
                 {/* Incidents Log (Visible to all for monitoring) */}
                 <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Incident Log</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Vorfallprotokoll</h2>
                     <div className="max-h-48 overflow-y-auto space-y-2">
-                        {incidents.length === 0 && <p className="text-gray-500 italic">No active incidents.</p>}
+                        {incidents.length === 0 && <p className="text-gray-500 italic">Keine aktiven Vorfälle.</p>}
                         {incidents.slice().reverse().map(inc => (
                             <div key={inc.id} className="flex items-start gap-3 text-sm p-2 border-b last:border-0">
                                 <span className="font-mono text-gray-400">{new Date(inc.id).toLocaleTimeString()}</span>
-                                <span className={`font-bold ${inc.type === 'Security Alert' ? 'text-red-600' : 'text-yellow-600'}`}>{inc.type}:</span>
+                                <span className={`font-bold ${inc.type === 'Security Alert' ? 'text-red-600' : 'text-yellow-600'}`}>{inc.type === 'Security Alert' ? 'Sicherheitswarnung' : inc.type === 'Delay' ? 'Verspätung' : 'Verspätungs-Update'}:</span>
                                 <span className="text-gray-700">{inc.description}</span>
                             </div>
                         ))}
@@ -102,7 +101,7 @@ function App() {
 
                 {/* Train Table */}
                 <section>
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Active Trains</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Aktive Züge</h2>
                     <TrainTable trains={trains} isAdmin={isAdmin} />
                 </section>
 
