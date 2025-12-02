@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TrainTable = ({ trains, isAdmin }) => {
+const TrainTable = ({ trains, isAdmin, onCancelDelay }) => {
     return (
         <div className="space-y-4">
             {trains.map((train) => (
@@ -14,7 +14,7 @@ const TrainTable = ({ trains, isAdmin }) => {
                                 {train.type}
                             </span>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${train.status === 'On Time' ? 'bg-green-100 text-green-800' :
-                                    train.status === 'Delayed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                                train.status === 'Delayed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                                 }`}>
                                 {train.status === 'On Time' ? 'Pünktlich' : train.status === 'Delayed' ? 'Verspätet' : train.status}
                             </span>
@@ -84,9 +84,20 @@ const TrainTable = ({ trains, isAdmin }) => {
                             {isAdmin && (
                                 <div className="flex flex-col items-end min-w-[100px]">
                                     <span className="text-xs text-gray-500 uppercase font-bold tracking-wider">Injected Verspätung</span>
-                                    <span className={`text-lg font-bold ${train.delayMinutes > 0 ? 'text-red-600' : 'text-gray-400'}`}>
-                                        {train.delayMinutes > 0 ? `+${Math.ceil(train.delayMinutes)} min` : '-'}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-lg font-bold ${train.delayMinutes > 0 ? 'text-red-600' : 'text-gray-400'}`}>
+                                            {train.delayMinutes > 0 ? `+${Math.ceil(train.delayMinutes)} min` : '-'}
+                                        </span>
+                                        {train.delayMinutes > 0 && (
+                                            <button
+                                                onClick={() => onCancelDelay(train.id)}
+                                                className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold rounded transition-colors"
+                                                title="Verspätung aufheben"
+                                            >
+                                                STOP
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                             <div className="flex flex-col items-end min-w-[100px]">

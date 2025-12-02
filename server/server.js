@@ -84,6 +84,14 @@ setInterval(() => {
                 if (train.delayMinutes <= 0) {
                     train.delayMinutes = 0;
                     train.status = 'On Time'; // Resume normal status
+
+                    // Log the expiration
+                    incidents.push({
+                        id: Date.now(),
+                        type: 'Delay Update',
+                        trainId: train.id,
+                        description: `Verspätung für ${train.id} wurde aufgehoben.`
+                    });
                 }
             } else {
                 // Ensure status is correct if not delayed
@@ -160,13 +168,41 @@ app.post('/api/inject', (req, res) => {
                 id: Date.now(),
                 type: 'Security Alert',
                 trainId: 'SYSTEM',
-                description: 'High traffic load detected. Possible DoS attack.'
+                description: 'Hohe Anfragemenge erkannt. Möglicher Denial of Service.'
             });
         }
     }
 
     io.emit('update', { trains, incidents, isDosActive });
     res.json({ success: true, message: `Injected ${type}` });
+});
+
+app.post('/api/cancel-delay', (req, res) => {
+    const { trainId } = req.body;
+    const train = trains.find(t => t.id === trainId);
+
+    if (train) {
+        // Only cancel if it is actually delayed
+        if (train.delayMinutes > 0) {
+            train.delayMinutes = 0;
+            train.status = 'On Time';
+
+            // Log the cancellation
+            incidents.push({
+                id: Date.now(),
+                type: 'Delay Update',
+                trainId: trainId,
+                description: `${train.id} (${train.route.start} → ${train.route.end}) fährt wieder.`
+            });
+
+            io.emit('update', { trains, incidents, isDosActive });
+            res.json({ success: true, message: `Delay cancelled for ${trainId}` });
+        } else {
+            res.json({ success: false, message: `Train ${trainId} is not delayed` });
+        }
+    } else {
+        res.status(404).json({ error: 'Train not found' });
+    }
 });
 
 app.post('/api/reset', (req, res) => {

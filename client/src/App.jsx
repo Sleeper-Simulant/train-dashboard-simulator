@@ -45,6 +45,16 @@ function App() {
             .catch(err => console.error("Inject failed", err));
     };
 
+    const handleCancelDelay = (trainId) => {
+        fetch('http://localhost:3001/api/cancel-delay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trainId })
+        }).then(res => res.json())
+            .then(data => console.log(data.message))
+            .catch(err => console.error("Cancel delay failed", err));
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 p-8 font-sans">
             <header className="mb-8 flex justify-between items-center">
@@ -83,7 +93,7 @@ function App() {
                         onInject={handleInject}
                     />
                 )}
-                
+
                 {/* Incidents Log (Visible to all for monitoring) */}
                 <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                     <h2 className="text-xl font-semibold mb-4 text-gray-800">Vorfallprotokoll</h2>
@@ -102,7 +112,7 @@ function App() {
                 {/* Train Table */}
                 <section>
                     <h2 className="text-xl font-semibold mb-4 text-gray-800">Aktive Züge</h2>
-                    <TrainTable trains={trains} isAdmin={isAdmin} />
+                    <TrainTable trains={trains} isAdmin={isAdmin} onCancelDelay={handleCancelDelay} />
                 </section>
 
 
