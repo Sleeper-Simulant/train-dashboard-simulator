@@ -34,12 +34,14 @@ const SollIstTable = ({ trains }) => {
                                         {formatTime(plannedArrival)}
                                     </td>
                                     <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono font-medium ${variance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                        {formatTime(estimatedArrival)}
+                                        {train.status === 'Maintenance' ? '-' : formatTime(estimatedArrival)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-bold ${variance > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-bold ${train.status === 'Maintenance' ? 'bg-orange-100 text-orange-800' :
+                                                variance > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                             }`}>
-                                            {variance > 0 ? `+${variance} min` : 'Pünktlich'}
+                                            {train.status === 'Maintenance' ? 'In Wartung' :
+                                                variance > 0 ? `+${variance} min` : 'Pünktlich'}
                                         </span>
                                     </td>
                                 </tr>

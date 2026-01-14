@@ -34,13 +34,13 @@ const ZUVTable = ({ trains }) => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{train.nextStationName}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatTime(train.plannedArrivalNext)}</td>
                                     <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDelayed ? 'text-red-600' : 'text-green-600'}`}>
-                                        {formatTime(train.estimatedArrivalNext)}
+                                        {train.status === 'Maintenance' ? '-' : formatTime(train.estimatedArrivalNext)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${train.status === 'On Time' ? 'bg-green-100 text-green-800' :
-                                                train.status === 'Delayed' ? 'bg-red-100 text-red-800' :
-                                                    train.status === 'Maintenance' ? 'bg-orange-100 text-orange-800' :
-                                                        'bg-gray-100 text-gray-800'
+                                            train.status === 'Delayed' ? 'bg-red-100 text-red-800' :
+                                                train.status === 'Maintenance' ? 'bg-orange-100 text-orange-800' :
+                                                    'bg-gray-100 text-gray-800'
                                             }`}>
                                             {train.status === 'On Time' ? 'Pünktlich' :
                                                 train.status === 'Delayed' ? 'Verspätet' :
