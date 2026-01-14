@@ -49,15 +49,42 @@ function getRandomRoute() {
 
 // Initialize some trains
 function initTrains() {
-    trains = Array.from({ length: 10 }, (_, i) => ({
-        id: `TR-${100 + i}`,
-        type: TRAIN_TYPES[Math.floor(Math.random() * TRAIN_TYPES.length)],
-        route: getRandomRoute(),
-        progress: Math.random() * 100, // 0 to 100%
-        status: 'On Time', // 'On Time', 'Delayed', 'Cancelled'
-        delayMinutes: 0,
-        totalDelayMinutes: 0 // Track accumulated delay
-    }));
+    const now = Date.now();
+    trains = Array.from({ length: 15 }, (_, i) => {
+        const route = getRandomRoute();
+        // Random start time within last 30 mins to next 30 mins
+        // Note: Simulation logic below needs to handle "not started" trains if we want to get fancy,
+        // but for now let's assume they are all "active" or "just started" for simplicity,
+        // or we just set start times in past to ensure they are on track.
+        // Let's settle on: Trains started randomly between -10 mins and +0 mins ago to ensure they are on track.
+        // Duration: 200 simulation ticks (seconds) implies ~3.33 mins travel time at 1.0 speed?
+        // Let's standardize: Total Route Duration = 5 minutes (300 seconds).
+        const totalDurationSeconds = 300;
+
+        // Progress 0-100. Let's reverse calc start time from progress for existing trains to align visual to logic.
+        const progress = Math.random() * 100;
+        const progressSeconds = (progress / 100) * totalDurationSeconds;
+
+        return {
+            id: `TR-${1000 + i}`,
+            type: TRAIN_TYPES[Math.floor(Math.random() * TRAIN_TYPES.length)],
+            route: route,
+            progress: progress, // 0 to 100%
+            status: 'On Time', // 'On Time', 'Delayed', 'Cancelled', 'Maintenance' // Added Maintenance
+            delayMinutes: 0,
+            totalDelayMinutes: 0,
+
+            // Scheduling
+            totalDurationSeconds: totalDurationSeconds,
+            startTime: now - (progressSeconds * 1000), // Backdate start time to match progress
+
+            // Computed for UI (will be updated in loop)
+            currentStationName: route.start,
+            nextStationName: route.stations[1],
+            plannedArrivalNext: 0,
+            estimatedArrivalNext: 0
+        };
+    });
 }
 
 initTrains();
@@ -68,7 +95,7 @@ setInterval(() => {
 
     trains.forEach(train => {
         if (train.status !== 'Cancelled' && train.status !== 'Maintenance') {
-            let speed = 0.5; // Base speed
+            let speed = (100 / train.totalDurationSeconds); // Calculate speed to match duration
 
             // Handle Delay
             if (train.delayMinutes > 0) {
@@ -109,7 +136,30 @@ setInterval(() => {
                 train.status = 'On Time';
                 train.delayMinutes = 0;
                 train.totalDelayMinutes = 0; // Reset total delay for new route
+                train.startTime = Date.now(); // Restart timer
             }
+
+            // --- Update Computed Properties ---
+            const stationCount = train.route.stations.length;
+            // Current segment index (0 to stationCount - 2)
+            const segmentIndex = Math.floor((train.progress / 100) * (stationCount - 1));
+            const safeSegmentIndex = Math.min(segmentIndex, stationCount - 2);
+
+            train.currentStationName = train.route.stations[safeSegmentIndex];
+            train.nextStationName = train.route.stations[safeSegmentIndex + 1];
+
+            // Time Calculations
+            // Total Progress needed for next station (end of segment)
+            const segmentProgressStep = 100 / (stationCount - 1);
+            const nextStationProgress = (safeSegmentIndex + 1) * segmentProgressStep;
+
+            // Validating: If start time is T0, Duration D.
+            // Planned Arrival at Progress P = T0 + (P/100 * D)
+            const msPerPercent = (train.totalDurationSeconds * 1000) / 100;
+            const timeToNextStationMs = train.startTime + (nextStationProgress * msPerPercent);
+
+            train.plannedArrivalNext = timeToNextStationMs;
+            train.estimatedArrivalNext = timeToNextStationMs + (train.totalDelayMinutes * 60 * 1000);
         }
     });
 

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import TrainTable from './components/TrainTable';
+import ZUVTable from './components/ZUVTable';
+import SollIstTable from './components/SollIstTable';
 import AdminPanel from './components/AdminPanel';
 
 // Connect to the backend
@@ -12,6 +14,7 @@ function App() {
     const [isHackActive, setIsHackActive] = useState(false);
     const [connectionStatus, setConnectionStatus] = useState('Disconnected');
     const [isAdmin, setIsAdmin] = useState(false); // Simple toggle for view
+    const [currentView, setCurrentView] = useState('SSP'); // 'SSP' (Streckenspiegel), 'ZUV' (Zugverzeichnis), 'SIA' (Soll-Ist)
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -118,10 +121,48 @@ function App() {
                             </div>
                         </section>
 
-                        {/* Train Table */}
+                        {/* View Selection Tabs */}
+                        <div className="flex border-b border-gray-200 mb-6">
+                            <button
+                                className={`px-4 py-2 font-medium text-sm transition-colors ${currentView === 'SSP' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                onClick={() => setCurrentView('SSP')}
+                            >
+                                Streckenspiegel (SSP)
+                            </button>
+                            <button
+                                className={`px-4 py-2 font-medium text-sm transition-colors ${currentView === 'ZUV' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                onClick={() => setCurrentView('ZUV')}
+                            >
+                                Zugverzeichnis (ZUV)
+                            </button>
+                            <button
+                                className={`px-4 py-2 font-medium text-sm transition-colors ${currentView === 'SIA' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                onClick={() => setCurrentView('SIA')}
+                            >
+                                Soll-Ist-Abweichung (SIA)
+                            </button>
+                        </div>
+
+                        {/* Train Tables */}
                         <section>
-                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Aktive Züge</h2>
-                            <TrainTable trains={trains} isAdmin={isAdmin} onCancelDelay={handleCancelDelay} />
+                            {currentView === 'SSP' && (
+                                <>
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Streckenspiegel</h2>
+                                    <TrainTable trains={trains} isAdmin={isAdmin} onCancelDelay={handleCancelDelay} />
+                                </>
+                            )}
+                            {currentView === 'ZUV' && (
+                                <>
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Zugverzeichnis (ZUV)</h2>
+                                    <ZUVTable trains={trains} />
+                                </>
+                            )}
+                            {currentView === 'SIA' && (
+                                <>
+                                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Soll-Ist-Abweichung (SIA)</h2>
+                                    <SollIstTable trains={trains} />
+                                </>
+                            )}
                         </section>
                     </>
                 )}
