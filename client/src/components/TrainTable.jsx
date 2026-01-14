@@ -4,7 +4,9 @@ const TrainTable = ({ trains, isAdmin, onCancelDelay }) => {
     return (
         <div className="space-y-4">
             {trains.map((train) => (
-                <div key={train.id} className={`bg-white p-6 rounded-xl shadow-sm border transition-all ${train.status === 'Delayed' ? 'border-red-200 bg-red-50/30' : 'border-gray-200'
+                <div key={train.id} className={`bg-white p-6 rounded-xl shadow-sm border transition-all ${train.status === 'Delayed' ? 'border-red-200 bg-red-50/30' :
+                    train.status === 'Maintenance' ? 'border-orange-200 bg-orange-50/30' :
+                        'border-gray-200'
                     }`}>
                     {/* Top Row: Info */}
                     <div className="flex justify-between items-start mb-4">
@@ -14,9 +16,14 @@ const TrainTable = ({ trains, isAdmin, onCancelDelay }) => {
                                 {train.type}
                             </span>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${train.status === 'On Time' ? 'bg-green-100 text-green-800' :
-                                train.status === 'Delayed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                                train.status === 'Delayed' ? 'bg-red-100 text-red-800' :
+                                    train.status === 'Maintenance' ? 'bg-orange-100 text-orange-800' :
+                                        'bg-gray-100 text-gray-800'
                                 }`}>
-                                {train.status === 'On Time' ? 'Pünktlich' : train.status === 'Delayed' ? 'Verspätet' : train.status}
+                                {train.status === 'On Time' ? 'Pünktlich' :
+                                    train.status === 'Delayed' ? 'Verspätet' :
+                                        train.status === 'Maintenance' ? 'In Wartung' :
+                                            train.status}
                             </span>
                         </div>
                     </div>
@@ -29,7 +36,9 @@ const TrainTable = ({ trains, isAdmin, onCancelDelay }) => {
                             <div className="relative mb-2">
                                 <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
                                     <div
-                                        className={`h-full transition-all duration-1000 ease-linear ${train.status === 'Delayed' ? 'bg-red-500' : 'bg-blue-600'
+                                        className={`h-full transition-all duration-1000 ease-linear ${train.status === 'Delayed' ? 'bg-red-500' :
+                                            train.status === 'Maintenance' ? 'bg-gray-400' :
+                                                'bg-blue-600'
                                             }`}
                                         style={{ width: `${train.progress}%` }}
                                     >

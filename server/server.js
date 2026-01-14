@@ -67,7 +67,7 @@ setInterval(() => {
     if (isHackActive) return; // Stop updates during Hack
 
     trains.forEach(train => {
-        if (train.status !== 'Cancelled') {
+        if (train.status !== 'Cancelled' && train.status !== 'Maintenance') {
             let speed = 0.5; // Base speed
 
             // Handle Delay
@@ -160,6 +160,17 @@ app.post('/api/inject', (req, res) => {
                     description: description
                 });
             }
+        }
+    } else if (type === 'MAINTENANCE') {
+        const train = trains.find(t => t.id === targetId);
+        if (train) {
+            train.status = 'Maintenance';
+            incidents.push({
+                id: Date.now(),
+                type: 'Instandhaltung',
+                trainId: targetId,
+                description: `Zug ${train.id} ist wegen Reperaturarbeiten im Werk`
+            });
         }
     } else if (type === 'HACK') {
         isHackActive = !isHackActive; // Toggle Hack
