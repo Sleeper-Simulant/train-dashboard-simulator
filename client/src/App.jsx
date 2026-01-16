@@ -6,8 +6,7 @@ import ZUVTable from './components/ZUVTable';
 import SollIstTable from './components/SollIstTable';
 import AdminPanel from './components/AdminPanel';
 
-const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001`;
-const socket = io(API_URL);
+const socket = io();
 
 // Simple Login Component
 function Login({ onLogin }) {
@@ -17,7 +16,7 @@ function Login({ onLogin }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch(`${API_URL}/api/login`, {
+        fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -89,7 +88,7 @@ function App() {
     }, [currentUser]);
 
     const handleInject = (type, targetId, value, message) => {
-        fetch(`${API_URL}/api/inject`, {
+        fetch('/api/inject', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, targetId, value, message })
@@ -97,7 +96,7 @@ function App() {
     };
 
     const handleCancelDelay = (trainId) => {
-        fetch(`${API_URL}/api/cancel-delay`, {
+        fetch('/api/cancel-delay', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ trainId })
@@ -110,7 +109,7 @@ function App() {
     };
 
     const handleKick = (username) => {
-        fetch(`${API_URL}/api/kick`, {
+        fetch('/api/kick', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
@@ -118,7 +117,7 @@ function App() {
     };
 
     const handleReset = () => {
-        fetch(`${API_URL}/api/reset`, { method: 'POST' })
+        fetch('/api/reset', { method: 'POST' })
             .then(res => res.json())
             .then(data => console.log(data.message))
             .catch(err => console.error("Reset failed", err));
@@ -163,9 +162,9 @@ function App() {
                                         {/* Tab Navigation Menu */}
                                         <div className="flex border-b border-gray-200 mb-6">
                                             {['SSP', 'ZUV', 'SIA'].map(view => (
-                                                <button 
-                                                    key={view} 
-                                                    className={`px-4 py-2 font-medium text-sm transition-colors ${currentView === view ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-500'}`} 
+                                                <button
+                                                    key={view}
+                                                    className={`px-4 py-2 font-medium text-sm transition-colors ${currentView === view ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-500'}`}
                                                     onClick={() => setCurrentView(view)}
                                                 >
                                                     {view === 'SSP' ? 'Streckenspiegel' : view === 'ZUV' ? 'Zugverzeichnis' : 'Soll-Ist-Abweichung'}
