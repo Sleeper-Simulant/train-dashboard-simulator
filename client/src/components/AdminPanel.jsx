@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, allUsers, onKick }) => {
+const AdminPanel = ({ trains, isHackActive, onInject, onReset, activeUsers, allUsers, onKick }) => {
     const [selectedTrain, setSelectedTrain] = useState('');
     const [maintenanceTrain, setMaintenanceTrain] = useState('');
     const [delayValue, setDelayValue] = useState(10);
@@ -17,9 +17,7 @@ const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, allUsers, onK
     };
 
     const handleReset = () => {
-        fetch('http://localhost:3001/api/reset', { method: 'POST' })
-            .then(res => res.json())
-            .then(data => console.log(data.message));
+        if (onReset) onReset();
     };
 
     return (
