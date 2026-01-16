@@ -6,7 +6,8 @@ import ZUVTable from './components/ZUVTable';
 import SollIstTable from './components/SollIstTable';
 import AdminPanel from './components/AdminPanel';
 
-const socket = io('http://localhost:3001');
+const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3001`;
+const socket = io(API_URL);
 
 // Simple Login Component
 function Login({ onLogin }) {
@@ -16,7 +17,7 @@ function Login({ onLogin }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch('http://localhost:3001/api/login', {
+        fetch(`${API_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -25,6 +26,10 @@ function Login({ onLogin }) {
             .then(data => {
                 if (data.success) onLogin(data.username);
                 else setError(data.message);
+            })
+            .catch(err => {
+                console.error("Login failed", err);
+                setError("Verbindung zum Server fehlgeschlagen.");
             });
     };
 
@@ -84,7 +89,7 @@ function App() {
     }, [currentUser]);
 
     const handleInject = (type, targetId, value, message) => {
-        fetch('http://localhost:3001/api/inject', {
+        fetch(`${API_URL}/api/inject`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, targetId, value, message })
@@ -92,7 +97,7 @@ function App() {
     };
 
     const handleCancelDelay = (trainId) => {
-        fetch('http://localhost:3001/api/cancel-delay', {
+        fetch(`${API_URL}/api/cancel-delay`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ trainId })
@@ -105,11 +110,18 @@ function App() {
     };
 
     const handleKick = (username) => {
-        fetch('http://localhost:3001/api/kick', {
+        fetch(`${API_URL}/api/kick`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
         }).catch(err => console.error("Kick failed", err));
+    };
+
+    const handleReset = () => {
+        fetch(`${API_URL}/api/reset`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => console.log(data.message))
+            .catch(err => console.error("Reset failed", err));
     };
 
     // Shared Header Component, admin panel weg
@@ -206,6 +218,7 @@ function App() {
                                 trains={trains}
                                 isHackActive={isHackActive}
                                 onInject={handleInject}
+                                onReset={handleReset}
                                 activeUsers={activeUsers}
                                 allUsers={allUsers}
                                 onKick={handleKick}

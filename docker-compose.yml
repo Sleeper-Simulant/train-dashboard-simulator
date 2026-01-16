@@ -4,20 +4,20 @@ services:
     build: ./server
     ports:
       - "3001:3001"
-    volumes:
-      - ./server:/app
-      - /app/node_modules
+#    volumes:
+#      - ./server:/app
+#      - /app/node_modules
     environment:
       - PORT=3001
-    command: npm run dev
+    command: npm start
 
   client:
     build: ./client
     ports:
       - "3000:3000"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
+#    volumes:
+#      - ./client:/app
+#      - /app/node_modules
     environment:
       - VITE_API_URL=http://localhost:3001
     command: npm run dev -- --host
