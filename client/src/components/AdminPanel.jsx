@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AdminPanel = ({ trains, isHackActive, onInject }) => {
+const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, onKick }) => {
     const [selectedTrain, setSelectedTrain] = useState('');
     const [maintenanceTrain, setMaintenanceTrain] = useState('');
     const [delayValue, setDelayValue] = useState(10);
@@ -92,6 +92,31 @@ const AdminPanel = ({ trains, isHackActive, onInject }) => {
                         >
                             In Wartung senden
                         </button>
+                    </div>
+                </div>
+
+                {/* User Management Section */}
+                <div className="p-4 border rounded bg-gray-50 md:col-span-2">
+                    <h3 className="font-semibold mb-2">Benutzerverwaltung</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {['user1', 'user2', 'user3'].map(username => {
+                            const isOnline = activeUsers.includes(username);
+                            return (
+                                <div key={username} className="flex flex-col p-3 bg-white border rounded shadow-sm">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="font-bold">{username}</span>
+                                        <span className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                                    </div>
+                                    <button
+                                        onClick={() => onKick(username)}
+                                        disabled={!isOnline}
+                                        className="text-xs bg-red-100 text-red-700 py-1 rounded hover:bg-red-200 disabled:opacity-30"
+                                    >
+                                        Sitzung beenden (Kick)
+                                    </button>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 

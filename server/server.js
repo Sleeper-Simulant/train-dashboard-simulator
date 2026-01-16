@@ -15,6 +15,15 @@ const io = new Server(server, {
     }
 });
 
+// Hardcoded User
+const USERS = {
+    'user1': 'password1',
+    'user2': 'password2',
+    'user3': 'password3',
+    'user4': 'password4'
+};
+let activeUsers = [];
+
 // --- Simulation State ---
 const ROUTES = [
     ['Wien Hbf', 'St. Pölten Hbf', 'Linz Hbf', 'Salzburg Hbf'],
@@ -163,7 +172,7 @@ setInterval(() => {
         }
     });
 
-    io.emit('update', { trains, incidents, isHackActive });
+    io.emit('update', { trains, incidents, isHackActive, activeUsers });
 }, 1000);
 
 // --- API Endpoints ---
@@ -234,8 +243,28 @@ app.post('/api/inject', (req, res) => {
         }
     }
 
-    io.emit('update', { trains, incidents, isHackActive });
+    io.emit('update', { trains, incidents, isHackActive, activeUsers });
     res.json({ success: true, message: `Injected ${type}` });
+});
+
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    if (USERS[username] && USERS[username] === password) {
+        if (!activeUsers.includes(username)) {
+            activeUsers.push(username);
+        }
+        res.json({ success: true, username });
+    } else {
+        res.status(401).json({ success: false, message: 'Falsche Zugangsdaten' });
+    }
+});
+
+app.post('/api/kick', (req, res) => {
+    const { username } = req.body;
+    activeUsers = activeUsers.filter(u => u !== username);
+    // Notify all clients that a user was kicked
+    io.emit('kick', { username });
+    res.json({ success: true, message: `User ${username} kicked` });
 });
 
 app.post('/api/cancel-delay', (req, res) => {
@@ -256,7 +285,7 @@ app.post('/api/cancel-delay', (req, res) => {
                 description: `${train.id} (${train.route.start} → ${train.route.end}) fährt wieder.`
             });
 
-            io.emit('update', { trains, incidents, isHackActive });
+            io.emit('update', { trains, incidents, isHackActive, activeUsers });
             res.json({ success: true, message: `Delay cancelled for ${trainId}` });
         } else {
             res.json({ success: false, message: `Train ${trainId} is not delayed` });
@@ -270,7 +299,7 @@ app.post('/api/reset', (req, res) => {
     initTrains();
     incidents = [];
     isHackActive = false;
-    io.emit('update', { trains, incidents, isHackActive });
+    io.emit('update', { trains, incidents, isHackActive, activeUsers });
     res.json({ success: true, message: 'System Reset' });
 });
 
