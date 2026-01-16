@@ -24,6 +24,15 @@ const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, allUsers, onK
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 mt-8">
+            <div className="bg-red-600 text-white p-4 rounded-lg mb-6 text-center shadow-lg border-2 border-red-800">
+                <h2 className="text-2xl font-bold mb-2 uppercase">ACHTUNG ÜBUNGSTEILNEHMER</h2>
+                <p className="font-bold">
+                    Herzlichen Glückwunsch, du hast das Admin Panel gefunden! ;) <br />
+                    Das hier ist leider nicht Teil der Übung, deshalb bitten wir dich diesen Endpoint einfach wieder zu vergessen. <br />
+                    Danke und viel Spass bei der Übung!
+                </p>
+            </div>
+
             <h2 className="text-xl font-bold mb-4 text-gray-800">Admin-Kontrollpanel (Injects)</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
