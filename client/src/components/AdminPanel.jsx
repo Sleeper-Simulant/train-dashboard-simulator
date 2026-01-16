@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, onKick }) => {
+const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, allUsers, onKick }) => {
     const [selectedTrain, setSelectedTrain] = useState('');
     const [maintenanceTrain, setMaintenanceTrain] = useState('');
     const [delayValue, setDelayValue] = useState(10);
@@ -99,7 +99,7 @@ const AdminPanel = ({ trains, isHackActive, onInject, activeUsers, onKick }) => 
                 <div className="p-4 border rounded bg-gray-50 md:col-span-2">
                     <h3 className="font-semibold mb-2">Benutzerverwaltung</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {['user1', 'user2', 'user3'].map(username => {
+                        {(allUsers || []).map(username => {
                             const isOnline = activeUsers.includes(username);
                             return (
                                 <div key={username} className="flex flex-col p-3 bg-white border rounded shadow-sm">

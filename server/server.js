@@ -10,7 +10,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", // Allow all origins for simplicity in this exercise
+        origin: "*", 
         methods: ["GET", "POST"]
     }
 });
@@ -20,11 +20,13 @@ const USERS = {
     'user1': 'password1',
     'user2': 'password2',
     'user3': 'password3',
-    'user4': 'password4'
+    'user4': 'password4',
+    'peter': 'peter',
+    'admin': 'admin'
 };
 let activeUsers = [];
 
-// --- Simulation State ---
+// Hardcoded Simulation Routen
 const ROUTES = [
     ['Wien Hbf', 'St. Pölten Hbf', 'Linz Hbf', 'Salzburg Hbf'],
     ['Graz Hbf', 'Bruck an der Mur', 'Leoben Hbf', 'Kapfenberg'],
@@ -172,7 +174,7 @@ setInterval(() => {
         }
     });
 
-    io.emit('update', { trains, incidents, isHackActive, activeUsers });
+    io.emit('update', { trains, incidents, isHackActive, activeUsers, allUsers: Object.keys(USERS) });
 }, 1000);
 
 // --- API Endpoints ---
@@ -243,7 +245,7 @@ app.post('/api/inject', (req, res) => {
         }
     }
 
-    io.emit('update', { trains, incidents, isHackActive, activeUsers });
+    io.emit('update', { trains, incidents, isHackActive, activeUsers, allUsers: Object.keys(USERS) });
     res.json({ success: true, message: `Injected ${type}` });
 });
 
@@ -285,7 +287,7 @@ app.post('/api/cancel-delay', (req, res) => {
                 description: `${train.id} (${train.route.start} → ${train.route.end}) fährt wieder.`
             });
 
-            io.emit('update', { trains, incidents, isHackActive, activeUsers });
+            io.emit('update', { trains, incidents, isHackActive, activeUsers, allUsers: Object.keys(USERS) });
             res.json({ success: true, message: `Delay cancelled for ${trainId}` });
         } else {
             res.json({ success: false, message: `Train ${trainId} is not delayed` });
@@ -299,7 +301,7 @@ app.post('/api/reset', (req, res) => {
     initTrains();
     incidents = [];
     isHackActive = false;
-    io.emit('update', { trains, incidents, isHackActive, activeUsers });
+    io.emit('update', { trains, incidents, isHackActive, activeUsers, allUsers: Object.keys(USERS) });
     res.json({ success: true, message: 'System Reset' });
 });
 

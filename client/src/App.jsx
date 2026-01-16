@@ -53,6 +53,7 @@ function App() {
     // Authentifizierung
     const [currentUser, setCurrentUser] = useState(localStorage.getItem('user') || null);
     const [activeUsers, setActiveUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
 
     useEffect(() => {
         socket.on('connect', () => setConnectionStatus('Connected'));
@@ -62,6 +63,7 @@ function App() {
             setIncidents(data.incidents);
             setIsHackActive(data.isHackActive);
             setActiveUsers(data.activeUsers || []); // aktive userliste
+            setAllUsers(data.allUsers || []); // alle registrierten user
         });
 
         // User kicken
@@ -186,6 +188,7 @@ function App() {
                                 isHackActive={isHackActive}
                                 onInject={handleInject}
                                 activeUsers={activeUsers}
+                                allUsers={allUsers}
                                 onKick={handleKick}
                             />
                             <div className="mt-8">
