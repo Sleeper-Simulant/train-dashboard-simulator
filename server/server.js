@@ -10,19 +10,18 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*", 
+        origin: "*",
         methods: ["GET", "POST"]
     }
 });
 
 // Hardcoded User
 const USERS = {
-    'user1': 'password1',
-    'user2': 'password2',
-    'user3': 'password3',
-    'user4': 'password4',
-    'peter': 'peter',
-    'admin': 'admin'
+    'ARS-User1': '3dLS6fBWyy9fak21d',
+    'ARS-User2': 'Dbf73bKW2nMWs9a',
+    'ARS-User3': 'FsvI61B72kLapS9a2b',
+    'ARS-User4': 'La2vMde341smWQx',
+    'Hacker': 'DEATH GRIPS',
 };
 let activeUsers = [];
 
