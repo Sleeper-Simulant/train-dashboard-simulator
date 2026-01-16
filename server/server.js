@@ -42,7 +42,7 @@ const ROUTES = [
     ['Wien Hbf', 'Hütteldorf', 'St. Pölten Hbf', 'Amstetten']
 ];
 
-const TRAIN_TYPES = ['RJ', 'ICE', 'REX', 'S-Bahn'];
+const TRAIN_TYPES = ['RJ', 'ICE', 'REX'];
 
 let trains = [];
 let incidents = [];
@@ -70,7 +70,7 @@ function initTrains() {
         // Let's settle on: Trains started randomly between -10 mins and +0 mins ago to ensure they are on track.
         // Duration: 200 simulation ticks (seconds) implies ~3.33 mins travel time at 1.0 speed?
         // Let's standardize: Total Route Duration = 5 minutes (300 seconds).
-        const totalDurationSeconds = 300;
+        const totalDurationSeconds = 3000;
 
         // Progress 0-100. Let's reverse calc start time from progress for existing trains to align visual to logic.
         const progress = Math.random() * 100;

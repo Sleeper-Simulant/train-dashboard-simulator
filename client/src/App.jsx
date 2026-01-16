@@ -148,31 +148,50 @@ function App() {
                                     </div>
                                 ) : (
                                     <>
-                                        <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Vorfallprotokoll</h2>
-                                            <div className="max-h-48 overflow-y-auto space-y-2">
-                                                {incidents.length === 0 && <p className="text-gray-500 italic">Keine aktiven Vorfälle.</p>}
-                                                {incidents.slice().reverse().map(inc => (
-                                                    <div key={inc.id} className="flex items-start gap-3 text-sm p-2 border-b last:border-0">
-                                                        <span className="font-mono text-gray-400">{new Date(inc.id).toLocaleTimeString()}</span>
-                                                        <span className={`font-bold ${inc.type === 'Security Alert' ? 'text-red-600' : 'text-yellow-600'}`}>{inc.type === 'Security Alert' ? 'Sicherheitswarnung' : 'Meldung'}:</span>
-                                                        <span className="text-gray-700">{inc.description}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </section>
-
+                                        {/* Tab Navigation Menu */}
                                         <div className="flex border-b border-gray-200 mb-6">
                                             {['SSP', 'ZUV', 'SIA'].map(view => (
-                                                <button key={view} className={`px-4 py-2 font-medium text-sm ${currentView === view ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`} onClick={() => setCurrentView(view)}>
+                                                <button 
+                                                    key={view} 
+                                                    className={`px-4 py-2 font-medium text-sm transition-colors ${currentView === view ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-500'}`} 
+                                                    onClick={() => setCurrentView(view)}
+                                                >
                                                     {view === 'SSP' ? 'Streckenspiegel' : view === 'ZUV' ? 'Zugverzeichnis' : 'Soll-Ist-Abweichung'}
                                                 </button>
                                             ))}
                                         </div>
 
-                                        {currentView === 'SSP' && <TrainTable trains={trains} isAdmin={false} />}
-                                        {currentView === 'ZUV' && <ZUVTable trains={trains} />}
-                                        {currentView === 'SIA' && <SollIstTable trains={trains} />}
+                                        {/* Main Content Grid */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                            {/* Left Column: Tables (Spans 3/4 of the width) */}
+                                            <div className="lg:col-span-3 space-y-6">
+                                                {currentView === 'SSP' && <TrainTable trains={trains} isAdmin={false} />}
+                                                {currentView === 'ZUV' && <ZUVTable trains={trains} />}
+                                                {currentView === 'SIA' && <SollIstTable trains={trains} />}
+                                            </div>
+
+                                            {/* Right Column: Incident Log (Spans 1/4 of the width) */}
+                                            <aside className="lg:col-span-1">
+                                                <section className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 sticky top-8">
+                                                    <h2 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                                                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                                        Vorfallprotokoll
+                                                    </h2>
+                                                    <div className="max-h-[calc(100vh-300px)] overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                                                        {incidents.length === 0 && <p className="text-gray-500 italic text-sm">Keine aktiven Vorfälle.</p>}
+                                                        {incidents.slice().reverse().map(inc => (
+                                                            <div key={inc.id} className="flex flex-col gap-1 text-xs p-3 bg-gray-50 rounded border-l-4 border-blue-500">
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className={`font-bold ${inc.type === 'Security Alert' ? 'text-red-600' : 'text-blue-600'}`}>{inc.type === 'Security Alert' ? 'WARNUNG' : 'INFO'}</span>
+                                                                    <span className="font-mono text-gray-400">{new Date(inc.id).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                </div>
+                                                                <span className="text-gray-700 leading-relaxed">{inc.description}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </section>
+                                            </aside>
+                                        </div>
                                     </>
                                 )}
                             </main>
